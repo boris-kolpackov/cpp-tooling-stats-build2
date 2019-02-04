@@ -1,0 +1,9 @@
+cxx.std = experimental
+
+using cxx
+
+mxx{*}: extension = mpp
+hxx{*}: extension = hpp
+ixx{*}: extension = ipp
+txx{*}: extension = tpp
+cxx{*}: extension = cpp

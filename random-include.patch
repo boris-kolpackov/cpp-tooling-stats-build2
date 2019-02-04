@@ -1,0 +1,59 @@
+diff --git a/modules/parallel_perf.py b/modules/parallel_perf.py
+index 0149bdb..8f93956 100755
+--- a/modules/parallel_perf.py
++++ b/modules/parallel_perf.py
+@@ -203,6 +203,17 @@ class Test(Main):
+                         result[kind] = t1-t0
+         return result
+ 
++    __glob_includes__ = [
++        '#include <time.h>',
++        '#include <stdio.h>',
++        '#include <string.h>'
++
++       # '#include <signal.h>'
++
++       #,'#include <pthread.h>'
++       #,'#include <sqlite3.h>'
++    ]
++
+     __std_includes__ = [
+         '#include <regex>',
+         '#include <iostream>',
+@@ -345,6 +356,10 @@ class Test(Main):
+                     print('C++: "%s" => %s' % ('" "'.join(cc), t1-t0))
+ 
+     __module_template__ = '''\
++module;
++
++{glob_include}
++
+ export module {id};
+ {std_includes}
+ {imports}
+@@ -372,6 +387,7 @@ import {id};
+             module_size += Test.__append__(module_exports, c)
+         module_source = self.__module_template__.format(
+             id=id,
++            glob_include=random.choice(self.__glob_includes__),
+             std_includes='\n'.join(self.std_includes),
+             imports=''.join(module_imports),
+             exports='\n'.join(module_exports))
+@@ -449,6 +465,9 @@ import {id};
+     __headers_template__ = '''\
+ #ifndef H_GUARD_{id}
+ #define H_GUARD_{id}
++
++{glob_include}
++
+ {includes}
+ {std_includes}
+ namespace {id}_ns
+@@ -480,6 +499,7 @@ namespace {id}_ns
+             size += Test.__append__(exports, c)
+         source = self.__headers_template__.format(
+             id=id,
++            glob_include=random.choice(self.__glob_includes__),
+             std_includes='\n'.join(self.std_includes),
+             includes=''.join(includes),
+             exports='\n'.join(exports))

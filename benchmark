@@ -1,0 +1,40 @@
+#! /usr/bin/env bash
+
+trap "{ exit 1; }" ERR
+set -o errtrace # Trap in functions.
+
+j=8
+c=g++-m
+n=3
+
+function test () # <cmd-line>
+{
+  local r=0
+
+  "$@" clean 1>&2
+
+  local i t
+  for ((i=0; i < n; i++)); do
+    echo "$@" 1>&2
+    t="$(/usr/bin/time -f '%e' -- "$@" 2>&1 | tee /dev/fd/2 | tail -1)"
+    r="$(bc -l <<<"$r + $t")"
+    "$@" clean 1>&2
+  done
+
+  r="$(bc -l <<<"$r / $n")"
+  echo "$r"
+}
+
+hm="$(test make -j "$j" "CXX=$c")"
+
+cd headers
+hb="$(test b -j "$j" "config.cxx=$c")"
+cd ..
+
+cd modules
+mb="$(test b -j "$j" "config.cxx=$c")"
+cd ..
+
+echo "headers/make:   $hm"
+echo "headers/build2: $hb"
+echo "modules/build2: $mb"
