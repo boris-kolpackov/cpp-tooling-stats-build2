@@ -17,55 +17,39 @@ Steps to reproduce:
    Get the install instruction from: https://build2.org/install.xhtml
 
 
-2. Clone cpp_tooling_stats next to this project (known to work at 73c9581b8).
+2. Clone cpp_tooling_stats next to this project (known to work at 6b7a63a018).
 
    https://github.com/bfgroup/cpp_tooling_stats
 
 
-3. Apply generate-only.patch to cpp_tooling_stats:
-
-cd cpp_tooling_stats
-patch -p1 <../cpp-tooling-stats-build2/generate-only.patch
-
-
-4. Optionally apply random-include.patch to cpp_tooling_stats:
-
-cd cpp_tooling_stats
-patch -p1 <../cpp-tooling-stats-build2/random-include.patch
-
-
-5. Generate headers and modules source code (adjust DAG depth
-   as required):
+3. Generate headers and modules source code (adjust DAG depth as required):
 
 cd cpp_tooling_stats
 
 modules/parallel_perf.py --dir=../cpp-tooling-stats-build2 \
---kind=headers,modules --def-ints --json-out=/dev/null --dag-depth=36
+--no-run --json-out=/dev/null --kind=headers,modules \
+--def-ints --use-c-headers --dag-depth=36
 
 
-6. Adjust and run the benchmark script:
+4. Run the benchmark script:
 
    Note: the script requires GNU time(1) and bc(1) utilities (see below
          on how to run manually instead).
 
-   Edit the bencharm script and adjust jobs count (default is 8) and
-   GCC compiler name (default is g++-m):
+   The script takes two optional arguments: GCC compiler (default is g++-m)
+   and jobs count (default is 8):
 
 cd cpp-tooling-stats-build2
-nano benchmark
-
-   Then run:
-
-./benchmark
+./benchmark /path/to/g++-m 8
 
    The final output should be along these lines:
 
-headers/make:   7.47
-headers/build2: 8.03
-modules/build2: 2.02
+headers/make:   7.47s
+headers/build2: 8.03s
+modules/build2: 2.02s
 
 
-7. To run each test manually:
+5. To run each test manually:
 
 cd cpp-tooling-stats-build2
 

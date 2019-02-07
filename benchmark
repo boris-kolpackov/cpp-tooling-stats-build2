@@ -1,11 +1,21 @@
 #! /usr/bin/env bash
 
+# Usage: benchmark <gxx> <jobs>
+
 trap "{ exit 1; }" ERR
 set -o errtrace # Trap in functions.
 
-j=8
-c=g++-m
 n=3
+
+c="$1"
+if [ -z "$c" ]; then
+  c=g++-m
+fi
+
+j="$2"
+if [ -z "$j" ]; then
+  j=8
+fi
 
 function test () # <cmd-line>
 {
@@ -35,6 +45,6 @@ cd modules
 mb="$(test b -j "$j" "config.cxx=$c")"
 cd ..
 
-echo "headers/make:   $hm"
-echo "headers/build2: $hb"
-echo "modules/build2: $mb"
+echo "headers/make:   ${hm}s"
+echo "headers/build2: ${hb}s"
+echo "modules/build2: ${mb}s"
